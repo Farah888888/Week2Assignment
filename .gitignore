@@ -9,5 +9,6 @@ data/processed/
 data/cached/
 .python-version
 reports/
+read.ipynb
 # Virtual environments
 .venv
