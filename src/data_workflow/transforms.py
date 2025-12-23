@@ -69,7 +69,7 @@ def winsorize(s: pd.Series, lo: float = 0.01, hi: float = 0.99) -> pd.Series:
     upper_bound = s.quantile(hi)
     return s.clip(lower=lower_bound, upper=upper_bound)
 
-def add_outlier_flag(df: pd.DataFrame, col: str, *, k: float = 1.5) -> pd.DataFrame: 
-    lower_bound, upper_bound = iqr_bounds(df[col], k=k)
-    return df.assign(**{f"{col}__is_outlier": (df[col] < lower_bound) | (df[col] > upper_bound)})
 
+def add_outlier_flag(df: pd.DataFrame, col: str, *, k: float = 1.5) -> pd.DataFrame: 
+    lower_bound, upper_bound = iqr_bounds(df[col], k=1.5)
+    return df.assign(**{f"{col} is outlier": ((df[col] < lower_bound) | (df[col] > upper_bound))}) 

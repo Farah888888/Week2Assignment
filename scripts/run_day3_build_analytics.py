@@ -9,10 +9,9 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from data_workflow.io import read_orders_csv, read_users_csv, write_parquet, read_parquet
+from data_workflow.io import write_parquet, read_parquet
 from data_workflow.config import make_paths
-from data_workflow.transforms import (enforce_schema, dedupe_keep_latest, missingness_report,
- add_missing_flags, normalize_text, apply_mapping, parse_datetime, add_time_parts,
+from data_workflow.transforms import (parse_datetime, add_time_parts,
  iqr_bounds, winsorize, add_outlier_flag
  )
 from data_workflow.quality import assert_non_empty, assert_unique_key, assert_in_range, require_columns
@@ -32,14 +31,12 @@ def main():
     joined = add_time_parts(joined, "created_at")
 
     orders2 = joined.assign(amount_winsor=winsorize(joined["amount"]))
+    
 
-    #flag = add_outlier_flag(
-    #    joined["amount"], *iqr_bounds(joined["amount"].dropna(), k=1.5) )
-
+    joined = add_outlier_flag(joined, col="amount", k=1.5)
     write_parquet(
         joined.assign(
-            amount_winsorized=orders2["amount_winsor"],
-            #amount_is_outlier=flag,
+            amount_winsorized = orders2["amount_winsor"],
         ),
         p.processed / "orders_analytics.parquet"
     )
