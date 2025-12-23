@@ -30,12 +30,12 @@ def add_missing_flags(df: pd.DataFrame, cols: list[str]) -> pd.DataFrame:
 
 
 def normalize_text(s: pd.Series) -> pd.Series: 
-    return s.strip().casefold().replace(r'\s+', ' ', regex=True)
+    return s.str.strip().str.casefold().str.replace(r"\s+", " ", regex=True)
 
 def apply_mapping(s: pd.Series, mapping: dict[str, str]) -> pd.Series: 
-    return s.map(mapping).fillna(s) 
+    return s.map(lambda x: mapping.get(x, x))
 
 def dedupe_keep_latest(df: pd.DataFrame, key_cols: list[str], ts_col: str) -> pd.DataFrame: 
     df_sorted = df.sort_values(by=ts_col, ascending=False)
-    deduped_df = df_sorted.drop_duplicates(subset=key_cols, keep='first')
+    deduped_df = df_sorted.drop_duplicates(subset=key_cols, keep='last')
     return deduped_df.sort_index()  
