@@ -31,11 +31,11 @@ def main():
     joined = add_time_parts(joined, "created_at")
 
     orders2 = joined.assign(amount_winsor=winsorize(joined["amount"]))
-    
 
-    joined = add_outlier_flag(joined, col="amount", k=1.5)
+    orders2 = add_outlier_flag(orders2, col="amount", k=1.5)
+
     write_parquet(
-        joined.assign(
+        orders2.assign(
             amount_winsorized = orders2["amount_winsor"],
         ),
         p.processed / "orders_analytics.parquet"
