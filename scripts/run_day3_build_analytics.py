@@ -28,7 +28,7 @@ def main():
     joined = safe_left_join(
         orders, users, on="user_id", validate="many_to_one", suffixes=(" ", "_user"))
 
-    joined = parse_datetime(joined, "created_at")
+    joined = parse_datetime(joined, "created_at", utc = True)
     joined = add_time_parts(joined, "created_at")
 
     orders2 = joined.assign(amount_winsor=winsorize(joined["amount"]))
